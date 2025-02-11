@@ -18,10 +18,9 @@ func NewPostgresDB(cfg config.Config) (*Queries, error) {
 	if err = MigrateDB(db); err != nil {
 		return nil, err
 	}
-	
+
 	return New(db), err
 }
-
 
 func MigrateDB(db *sql.DB) error {
 	goose.SetBaseFS(resource.EmbedMigrations)
@@ -32,6 +31,6 @@ func MigrateDB(db *sql.DB) error {
 	if err := goose.Up(db, "migrations"); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
