@@ -17,6 +17,14 @@ docker_down:
 format:
 	go fmt ./...
 
+generate_sqlc:
+	sqlc generate
+
+generate_grpc:
+	protoc --go_out=internal/api \
+    --go-grpc_out=internal/api \
+    internal/api/grpc/proto/main.proto
+
 clean:
 	rm -rf ./bin
 	rm -rf ./data
