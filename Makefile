@@ -21,9 +21,14 @@ generate_sqlc:
 	sqlc generate
 
 generate_grpc:
-	protoc --go_out=internal/api \
-    --go-grpc_out=internal/api \
-    internal/api/grpc/proto/main.proto
+	protoc -I ./internal/api/grpc/proto \
+  -I $GOPATH/pkg/mod/google.golang.org/genproto/googleapis \
+  --go_out=internal/api/grpc --go-grpc_out=internal/api/grpc --grpc-gateway_out=internal/api/grpc \
+  --plugin=protoc-gen-grpc-gateway=$(which protoc-gen-grpc-gateway) \
+  --plugin=protoc-gen-go=$(which protoc-gen-go) \
+  --plugin=protoc-gen-go-grpc=$(which protoc-gen-go-grpc) \
+  internal/api/grpc/proto/main.proto
+
 
 clean:
 	rm -rf ./bin
