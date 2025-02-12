@@ -1,49 +1,75 @@
 package main
 
 import (
-	"google.golang.org/grpc"
+	"context"
 	"link_service/config"
-	"link_service/internal/api/grpc/api"
-	"link_service/internal/api/server"
 	"link_service/internal/api/gateway"
+	"link_service/internal/api/server"
 	"link_service/internal/db"
 	"link_service/internal/repository"
 	"link_service/internal/service"
-	"log"
-	"net"
-	"fmt"
+	"sync"
+
+	"os"
+	"os/signal"
+	"syscall"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
+	// Загрузка конфигурации
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		logrus.Fatalf("Failed to load config: %v", err)
 	}
+	logrus.Info("Config has been successfuly loaded")
 
+	// Подключение к БД
 	DB, err := db.NewPostgresDB(cfg)
 	if err != nil {
-		log.Fatalf("Failed to connect to DB: %v", err)
+		logrus.Fatalf("Failed to connect to DB: %v", err)
 	}
+	logrus.Info("Database has been successfuly connected")
 
+	// Создание слоя репозитория
 	repo := repository.NewLinkRepository(DB)
+
+	// Создание слоя сервиса
 	service := service.NewLinkService(repo)
 
-	grpcServer := grpc.NewServer()
-	linkServer := server.NewLinkGrpcServer(service)
-	api.RegisterUrlShortenerServer(grpcServer, linkServer)
+	// Контекст с отменой для управления жизненным циклом горутин
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// Запуск gRPC сервера в горутине
+	// WaitGroup для ожидания завершения всех горутин
+	var wg sync.WaitGroup
+
+	// Запуск GRPC сервера
+	wg.Add(1)
 	go func() {
-		listener, err := net.Listen("tcp", ":8081")
-		if err != nil {
-			log.Fatalf("Failed to listen on port 8081: %v", err)
-		}
-		fmt.Println("gRPC server running on port 8081...")
-		if err := grpcServer.Serve(listener); err != nil {
-			log.Fatalf("Failed to serve gRPC: %v", err)
-		}
+		defer wg.Done()
+		server.StartGrpcServer(ctx, cfg.GRPCAddr, service)
 	}()
 
-	// Запуск REST Gateway на порту 8080
-	gateway.StartRestGateway(":8081", ":8080")
+	// Запуск REST Gateway
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		gateway.StartRestGateway(ctx, cfg.GRPCAddr, cfg.GatewayAddr)
+	}()
+
+	// Канал для обработки сигналов завершения
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	// Ожидание сигнала завершения
+	<-stop
+	logrus.Info("Received shutdown signal. Gracefully shutting down...")
+
+	// Отмена контекста для остановки всех горутин
+	cancel()
+
+	// Ожидание завершения всех горутин
+	wg.Wait()
+	logrus.Info("All servers stopped. Exiting.")
 }

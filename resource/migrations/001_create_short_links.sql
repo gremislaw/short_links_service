@@ -1,5 +1,6 @@
 -- +goose Up
 
+
 CREATE TABLE short_links (
     id SERIAL PRIMARY KEY,
     original_url TEXT NOT NULL,

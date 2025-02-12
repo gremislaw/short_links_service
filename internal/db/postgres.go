@@ -2,10 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"link_service/config"
-	"link_service/resource"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
+	"link_service/config"
+	"link_service/resource"
 )
 
 func NewPostgresDB(cfg config.Config) (*Queries, error) {

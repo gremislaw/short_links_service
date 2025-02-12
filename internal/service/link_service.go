@@ -4,7 +4,7 @@ import (
 	"context"
 	"link_service/internal/repository"
 	"link_service/internal/util"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 type LinkService interface {
@@ -28,7 +28,7 @@ func (s *linkService) CreateShortURL(ctx context.Context, originalURL string) (s
 	// Сохраняем сокращённую ссылку в базе данных
 	err := s.repository.CreateShortURL(ctx, originalURL, shortenedURL)
 	if err != nil {
-		log.Printf("Ошибка при сохранении ссылки: %v", err)
+		logrus.Errorf("Error when saving short url: %v", err)
 		return "", err
 	}
 
@@ -38,7 +38,7 @@ func (s *linkService) CreateShortURL(ctx context.Context, originalURL string) (s
 func (s *linkService) GetOriginalURL(ctx context.Context, shortenedURL string) (string, error) {
 	originalURL, err := s.repository.GetOriginalURL(ctx, shortenedURL)
 	if err != nil {
-		log.Printf("Ошибка при получении оригинального URL: %v", err)
+		logrus.Errorf("Error when getting original url: %v", err)
 		return "", err
 	}
 	return originalURL, nil
