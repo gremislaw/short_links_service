@@ -1,6 +1,5 @@
-version: '3.8'
 services:
-  db:
+  postgres:
     image: postgres:latest
     restart: always
     environment:
@@ -8,9 +7,30 @@ services:
       POSTGRES_PASSWORD: dazhy
       POSTGRES_DB: short_link
     ports:
-      - "1234:5432"
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: short_links_service
+    restart: on-failure
+    depends_on: 
+      - postgres
+    environment:
+      APP_IP: "0.0.0.0"
+      APP_PORT: "8081"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USER: "dazhy"
+      DB_PASSWORD: "dazhy"
+      DB_NAME: "short_link"
+      GRPC_ADDRESS: ":8081"
+      GATEWAY_ADDRESS: ":8080"
+      STORAGE_TYPE: "postgres"
+    ports:
+      - "8081:8081"
+      - "8080:8080"
 
 volumes:
   db_data:

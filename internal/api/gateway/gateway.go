@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"link_service/internal/api/grpc/api"
+	"link_service/api/grpc"
 	"net/http"
 )
 

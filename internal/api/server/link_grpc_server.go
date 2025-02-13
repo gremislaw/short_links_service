@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"link_service/internal/api/grpc/api"
+	"link_service/api/grpc"
 	"link_service/internal/service"
 	"net"
 )

@@ -1,9 +1,7 @@
 package config
 
 import (
-	"log"
 	"os"
-
 	"github.com/joho/godotenv"
 )
 
@@ -19,10 +17,7 @@ type Config struct {
 }
 
 func LoadConfig() (Config, error) {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
-		return Config{}, err
-	}
+	err := godotenv.Load()
 	return Config{
 		DBHost:      os.Getenv("DB_HOST"),
 		DBPort:      os.Getenv("DB_PORT"),
@@ -32,5 +27,5 @@ func LoadConfig() (Config, error) {
 		GRPCAddr:    os.Getenv("GRPC_ADDRESS"),
 		GatewayAddr: os.Getenv("GATEWAY_ADDRESS"),
 		StorageType: os.Getenv("STORAGE_TYPE"),
-	}, nil
+	}, err
 }

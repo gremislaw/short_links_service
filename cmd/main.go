@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"link_service/config"
+	"link_service/internal/config"
 	"link_service/internal/api/gateway"
 	"link_service/internal/api/server"
 	"link_service/internal/db"
@@ -19,17 +19,10 @@ import (
 func main() {
 	// Загрузка конфигурации
 	cfg, err := config.LoadConfig()
-	if err != nil {
-		logrus.Fatalf("Failed to load config: %v", err)
+	if err != nil {	
+		logrus.Infof(".env file not found: %v", err)
 	}
 	logrus.Info("Config has been successfuly loaded")
-
-	// Подключение к БД
-	DB, err := db.NewPostgresDB(cfg)
-	if err != nil {
-		logrus.Fatalf("Failed to connect to DB: %v", err)
-	}
-	logrus.Info("Database has been successfuly connected")
 
 	// Создание слоя репозитория
 	// по параметру определяем тип хранилища
@@ -39,6 +32,12 @@ func main() {
 		repo = repository.NewInMemoryRepository()
 		logrus.Info("In memory storage has been chosen")
 	case "postgres":
+		// Подключение к БД
+		DB, err := db.NewPostgresDB(cfg)
+		if err != nil {
+			logrus.Fatalf("Failed to connect to DB: %v", err)
+		}
+		logrus.Info("Database has been successfuly connected")
 		repo = repository.NewPostgresRepository(DB)
 		logrus.Info("Postgres storage has been chosen")
 	default:
