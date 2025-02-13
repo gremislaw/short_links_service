@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"link_service/internal/config"
 	"link_service/internal/api/gateway"
 	"link_service/internal/api/server"
+	"link_service/internal/config"
 	"link_service/internal/db"
 	"link_service/internal/repository"
 	"link_service/internal/service"
@@ -19,7 +19,7 @@ import (
 func main() {
 	// Загрузка конфигурации
 	cfg, err := config.LoadConfig()
-	if err != nil {	
+	if err != nil {
 		logrus.Infof(".env file not found: %v", err)
 	}
 	logrus.Info("Config has been successfuly loaded")

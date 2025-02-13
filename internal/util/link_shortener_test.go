@@ -1,10 +1,10 @@
 package util_test
 
 import (
-	"testing"
-	"link_service/internal/util"
 	"github.com/stretchr/testify/assert"
+	"link_service/internal/util"
 	"regexp"
+	"testing"
 )
 
 func TestGenerateShortURL(t *testing.T) {

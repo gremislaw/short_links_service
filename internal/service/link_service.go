@@ -23,6 +23,7 @@ func NewLinkService(repo repository.LinkRepository) LinkService {
 }
 
 func (s *linkService) CreateShortURL(ctx context.Context, originalURL string) (string, error) {
+	logrus.Infof("CreateShortURL got: %v", originalURL)
 	shortenedURL := util.GenerateShortURL(originalURL)
 
 	// Сохраняем сокращённую ссылку в базе данных
@@ -32,14 +33,18 @@ func (s *linkService) CreateShortURL(ctx context.Context, originalURL string) (s
 		return "", err
 	}
 
+	logrus.Infof("CreateShortURL sent: %v", shortenedURL)
 	return shortenedURL, nil
 }
 
 func (s *linkService) GetOriginalURL(ctx context.Context, shortenedURL string) (string, error) {
+	logrus.Infof("GetOriginalURL got: %v", shortenedURL)
 	originalURL, err := s.repository.GetOriginalURL(ctx, shortenedURL)
 	if err != nil {
 		logrus.Errorf("Error when getting original url: %v", err)
 		return "", err
 	}
+
+	logrus.Infof("GetOriginalURL sent: %v", originalURL)
 	return originalURL, nil
 }
