@@ -10,10 +10,10 @@ import (
 	"link_service/internal/service"
 	"sync"
 
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
-	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -32,7 +32,19 @@ func main() {
 	logrus.Info("Database has been successfuly connected")
 
 	// Создание слоя репозитория
-	repo := repository.NewLinkRepository(DB)
+	// по параметру определяем тип хранилища
+	var repo repository.LinkRepository
+	switch cfg.StorageType {
+	case "in_memory":
+		repo = repository.NewInMemoryRepository()
+		logrus.Info("In memory storage has been chosen")
+	case "postgres":
+		repo = repository.NewPostgresRepository(DB)
+		logrus.Info("Postgres storage has been chosen")
+	default:
+		repo = repository.NewInMemoryRepository()
+		logrus.Info("Wrong type, in memory storage has been automatically chosen")
+	}
 
 	// Создание слоя сервиса
 	service := service.NewLinkService(repo)

@@ -15,7 +15,7 @@ func StartGrpcServer(shutdown context.Context, grpcAddr string, service service.
 
 	// Создаем экземпляр сервера
 	linkServer := NewLinkGrpcServer(service)
-	
+
 	// Регистрируем наш сервер (linkServer) в gRPC-сервере.
 	api.RegisterUrlShortenerServer(grpcServer, linkServer)
 
@@ -28,12 +28,12 @@ func StartGrpcServer(shutdown context.Context, grpcAddr string, service service.
 
 	// Запускаем gRPC-сервер, передавая ему listener.
 	// Serve блокирует выполнение, пока сервер не будет остановлен.
-	if err := grpcServer.Serve(listener); err != nil {
-		logrus.Fatalf("Failed to serve gRPC: %v", err)
-	}
-
+	go func() {
+		if err := grpcServer.Serve(listener); err != nil {
+			logrus.Fatalf("Failed to serve gRPC: %v", err)
+		}
+	}()
 	logrus.Info("gRPC server has been successfuly started")
-
 
 	// Ожидание отмены контекста
 	<-shutdown.Done()

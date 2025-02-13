@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 	"link_service/internal/repository"
 	"link_service/internal/util"
-	"github.com/sirupsen/logrus"
 )
 
 type LinkService interface {
@@ -23,7 +23,7 @@ func NewLinkService(repo repository.LinkRepository) LinkService {
 }
 
 func (s *linkService) CreateShortURL(ctx context.Context, originalURL string) (string, error) {
-	shortenedURL := util.GenerateShortURL()
+	shortenedURL := util.GenerateShortURL(originalURL)
 
 	// Сохраняем сокращённую ссылку в базе данных
 	err := s.repository.CreateShortURL(ctx, originalURL, shortenedURL)

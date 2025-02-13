@@ -24,6 +24,19 @@ func (q *Queries) CreateShortURL(ctx context.Context, arg CreateShortURLParams) 
 	return err
 }
 
+const existsURL = `-- name: ExistsURL :one
+SELECT shortened_url
+FROM short_links
+WHERE original_url = $1
+`
+
+func (q *Queries) ExistsURL(ctx context.Context, originalUrl string) (string, error) {
+	row := q.db.QueryRowContext(ctx, existsURL, originalUrl)
+	var shortened_url string
+	err := row.Scan(&shortened_url)
+	return shortened_url, err
+}
+
 const getOriginalURL = `-- name: GetOriginalURL :one
 SELECT original_url
 FROM short_links

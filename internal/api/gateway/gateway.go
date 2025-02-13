@@ -40,7 +40,7 @@ func StartRestGateway(shutdown context.Context, grpcAddr string, restAddr string
 			logrus.Errorf("Failed to start REST server: %v", err)
 		}
 	}()
-	logrus.Info("REST gateway has been successfuly started")	
+	logrus.Info("REST gateway has been successfuly started")
 
 	// Грациозное завершение HTTP сервера
 	<-shutdown.Done()

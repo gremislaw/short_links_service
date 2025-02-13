@@ -6,3 +6,8 @@ VALUES ($1, $2);
 SELECT original_url
 FROM short_links
 WHERE shortened_url = $1;
+
+-- name: ExistsURL :one
+SELECT shortened_url
+FROM short_links
+WHERE original_url = $1;

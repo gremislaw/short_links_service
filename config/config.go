@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -14,6 +15,7 @@ type Config struct {
 	DBName      string
 	GRPCAddr    string
 	GatewayAddr string
+	StorageType string
 }
 
 func LoadConfig() (Config, error) {
@@ -29,5 +31,6 @@ func LoadConfig() (Config, error) {
 		DBName:      os.Getenv("DB_NAME"),
 		GRPCAddr:    os.Getenv("GRPC_ADDRESS"),
 		GatewayAddr: os.Getenv("GATEWAY_ADDRESS"),
+		StorageType: os.Getenv("STORAGE_TYPE"),
 	}, nil
 }

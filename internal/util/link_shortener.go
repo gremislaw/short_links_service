@@ -1,17 +1,39 @@
 package util
 
 import (
-	"math/rand"
-	"time"
+	"crypto/sha256"
+	"encoding/base64"
+	"strings"
 )
 
-const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+func GenerateShortURL(originalURL string) string {
+	// Хешируем оригинальный URL с помощью SHA-256
+	hash := sha256.Sum256([]byte(originalURL))
 
-func GenerateShortURL() string {
-	rand.Seed(time.Now().UnixNano())
-	shortenedURL := make([]byte, 10)
-	for i := range shortenedURL {
-		shortenedURL[i] = charset[rand.Intn(len(charset))]
+	// Кодируем хеш в base64 (для использования допустимых символов)
+	encoded := base64.URLEncoding.EncodeToString(hash[:])
+
+	// Используем strings.Builder для замены символов
+	var builder strings.Builder
+	builder.Grow(10) // Резервируем место для 10 символов
+
+	for i := 0; i < 10; i++ {
+		char := encoded[i]
+		switch char {
+		case ' ':
+			builder.WriteByte('_')
+		case '+':
+			builder.WriteByte('_')
+		case '/':
+			builder.WriteByte('_')
+		case '-':
+			builder.WriteByte('_')
+		case '=':
+			builder.WriteByte('_')
+		default:
+			builder.WriteByte(char)
+		}
 	}
-	return string(shortenedURL)
+
+	return builder.String()
 }
