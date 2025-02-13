@@ -19,7 +19,7 @@ func NewInMemoryRepository() LinkRepository {
 func (r *inMemoryLinkRepository) CreateShortURL(ctx context.Context, originalURL, shortURL string) error {
 	// Сохраняем в обоих мапах
 	if !r.ExistsURL(ctx, originalURL) {
-		r.originalToShort.Store(originalURL, cacheItem{value: shortURL, expiry: time.Now().Add(1 * time.Minute)})
+		r.originalToShort.Store(originalURL, cacheItem{value: shortURL, expiry: time.Now().Add(10 * time.Minute)})
 		r.shortToOriginal.Store(shortURL, originalURL)
 	}
 
