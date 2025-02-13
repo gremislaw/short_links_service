@@ -18,7 +18,6 @@ func (item *cacheItem) IsExpired() bool {
 }
 
 func cleanupCache(mapa1, mapa2 *sync.Map) {
-	logrus.Info("cleanup")
 	mapa1.Range(func(key, value interface{}) bool {
 		// Преобразуем key и value в нужные типы
 		v := value.(cacheItem)
