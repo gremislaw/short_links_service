@@ -10,10 +10,11 @@ import (
 	"link_service/internal/service"
 	"sync"
 
-	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
