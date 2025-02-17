@@ -1,12 +1,16 @@
 package db
 
 import (
+	"embed"
 	"database/sql"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 	"link_service/internal/config"
-	"link_service/internal/resource"
 )
+
+//go:embed migrations/*.sql
+var EmbedMigrations embed.FS
+
 
 func NewPostgresDB(cfg config.Config) (*Queries, error) {
 	dsn := "postgres://" + cfg.DBUser + ":" + cfg.DBPassword + "@" + cfg.DBHost + ":" + cfg.DBPort + "/" + cfg.DBName + "?sslmode=disable"
@@ -24,7 +28,7 @@ func NewPostgresDB(cfg config.Config) (*Queries, error) {
 }
 
 func MigrateDB(db *sql.DB) error {
-	goose.SetBaseFS(resource.EmbedMigrations)
+	goose.SetBaseFS(EmbedMigrations)
 
 	if err := goose.SetDialect("postgres"); err != nil {
 		return err
