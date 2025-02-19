@@ -23,7 +23,8 @@ func NewPostgresDB(cfg config.Config) (*Queries, error) {
 		return nil, err
 	}
 
-	db.SetMaxOpenConns(99)
+	db.SetMaxOpenConns(1000)
+	db.SetMaxIdleConns(100)
 	return New(db), err
 }
 

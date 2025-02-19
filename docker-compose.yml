@@ -27,7 +27,7 @@ services:
       DB_NAME: "short_link"
       GRPC_ADDRESS: ":8081"
       GATEWAY_ADDRESS: ":8080"
-      STORAGE_TYPE: "in_memory"
+      STORAGE_TYPE: "postgres"
     ports:
       - "8081:8081"
       - "8080:8080"
